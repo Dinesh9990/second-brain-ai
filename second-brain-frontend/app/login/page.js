@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
+
 export default function LoginPage() {
 
   const router = useRouter();
@@ -11,7 +13,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ AUTO REDIRECT IF ALREADY LOGGED IN
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -26,7 +27,7 @@ export default function LoginPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -37,21 +38,19 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        return Swal.fire("Error", "Invalid credentials", "error");
+        return Swal.fire("Error", data.error || "Invalid credentials", "error");
       }
 
-      // ✅ FIX: SAFE STORE (NO UNDEFINED)
       localStorage.setItem("token", data.token);
       localStorage.setItem("name", data.name || "User");
 
       await Swal.fire("Success", "Login successful", "success");
 
-      // ✅ FORCE REFRESH (so Navbar updates)
       window.location.href = "/";
 
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Something went wrong", "error");
+      Swal.fire("Error", "Server not reachable", "error");
     }
   };
 
@@ -62,48 +61,33 @@ export default function LoginPage() {
         Login
       </h1>
 
-      <div
-        className="bg-white p-8 rounded-xl w-full max-w-md transition duration-200"
-        style={{ boxShadow: "1px 1px 5px goldenrod" }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.boxShadow = "2px 2px 10px goldenrod")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.boxShadow = "1px 1px 5px goldenrod")
-        }
-      >
+      <div className="bg-white p-8 rounded-xl w-full max-w-md"
+        style={{ boxShadow: "1px 1px 5px goldenrod" }}>
 
-        {/* Email */}
         <input
           type="email"
           placeholder="Enter your email"
-          className="w-full mb-4 border border-gray-300 px-3 py-2 rounded-lg 
-          text-gray-800 placeholder-gray-500 
-          focus:outline-none focus:ring-1 focus:ring-black"
+          className="w-full mb-4 border px-3 py-2 rounded-lg"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* Password */}
         <input
           type="password"
           placeholder="Enter password"
-          className="w-full mb-6 border border-gray-300 px-3 py-2 rounded-lg 
-          text-gray-800 placeholder-gray-500 
-          focus:outline-none focus:ring-1 focus:ring-black"
+          className="w-full mb-6 border px-3 py-2 rounded-lg"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
           onClick={handleLogin}
-          className="bg-black text-white w-full py-2 rounded-lg font-semibold hover:scale-105 transition cursor-pointer"
+          className="bg-black text-white w-full py-2 rounded-lg font-semibold"
         >
           Login
         </button>
 
       </div>
-
     </div>
   );
 }

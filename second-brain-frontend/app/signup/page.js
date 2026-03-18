@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
+
 export default function SignupPage() {
 
   const router = useRouter();
@@ -12,7 +14,6 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ AUTO REDIRECT IF ALREADY LOGGED IN
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -39,7 +40,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/auth/signup", {
+      const res = await fetch(`${BASE_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -50,22 +51,19 @@ export default function SignupPage() {
       const data = await res.json();
 
       if (!res.ok) {
-  return Swal.fire("Error", data.error, "error");
-}
+        return Swal.fire("Error", data.error || "Signup failed", "error");
+      }
 
-// ✅ AUTO LOGIN AFTER SIGNUP
-localStorage.setItem("token", data.token);
-localStorage.setItem("name", data.name || "User");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("name", data.name || "User");
 
-await Swal.fire("Success", "Signup successful", "success");
+      await Swal.fire("Success", "Signup successful", "success");
 
-window.location.href = "/";
-
-      // ❗ OPTION 2 (if you DON'T want auto login)
-      // router.push("/login");
+      window.location.href = "/";
 
     } catch (err) {
-      Swal.fire("Error", "Something went wrong", "error");
+      console.error(err);
+      Swal.fire("Error", "Server not reachable", "error");
     }
   };
 
@@ -76,59 +74,41 @@ window.location.href = "/";
         Signup
       </h1>
 
-      <div
-        className="bg-white p-8 rounded-xl w-full max-w-md transition duration-200"
-        style={{ boxShadow: "1px 1px 5px goldenrod" }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.boxShadow = "2px 2px 10px goldenrod")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.boxShadow = "1px 1px 5px goldenrod")
-        }
-      >
+      <div className="bg-white p-8 rounded-xl w-full max-w-md"
+        style={{ boxShadow: "1px 1px 5px goldenrod" }}>
 
-        {/* Name */}
         <input
           type="text"
           placeholder="Enter your name"
-          className="w-full mb-4 border border-gray-300 px-3 py-2 rounded-lg 
-          text-gray-800 placeholder-gray-500 
-          focus:outline-none focus:ring-1 focus:ring-black"
+          className="w-full mb-4 border px-3 py-2 rounded-lg"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
-        {/* Email */}
         <input
           type="email"
           placeholder="Enter your email"
-          className="w-full mb-4 border border-gray-300 px-3 py-2 rounded-lg 
-          text-gray-800 placeholder-gray-500 
-          focus:outline-none focus:ring-1 focus:ring-black"
+          className="w-full mb-4 border px-3 py-2 rounded-lg"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* Password */}
         <input
           type="password"
           placeholder="Enter password"
-          className="w-full mb-6 border border-gray-300 px-3 py-2 rounded-lg 
-          text-gray-800 placeholder-gray-500 
-          focus:outline-none focus:ring-1 focus:ring-black"
+          className="w-full mb-6 border px-3 py-2 rounded-lg"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
           onClick={handleSignup}
-          className="bg-[#e8c75f] w-full py-2 rounded-lg font-semibold hover:scale-105 transition cursor-pointer"
+          className="bg-[#e8c75f] w-full py-2 rounded-lg font-semibold"
         >
           Signup
         </button>
 
       </div>
-
     </div>
   );
 }
