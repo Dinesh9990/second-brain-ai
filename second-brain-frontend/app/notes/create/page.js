@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
+
 export default function CreateNotePage() {
 
   const router = useRouter();
@@ -30,7 +32,6 @@ export default function CreateNotePage() {
 
     setErrors(newErrors);
 
-    // ✅ Form validation
     if (newErrors.title || newErrors.content || newErrors.type) {
       await Swal.fire({
         title: "Incomplete Form",
@@ -48,13 +49,13 @@ export default function CreateNotePage() {
     try {
       const token = localStorage.getItem("token");
 
-      // ✅ Safety check (no UI popup here)
       if (!token) {
         router.push("/login");
         return;
       }
 
-      const res = await fetch("http://localhost:5000/notes", {
+      // ✅ FIXED HERE
+      const res = await fetch(`${BASE_URL}/notes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +112,6 @@ export default function CreateNotePage() {
         }
       >
 
-        {/* Title */}
         <div className="mb-5">
           <label className={`block font-semibold mb-1 ${errors.title ? "text-red-500" : "text-gray-800"}`}>
             Title *
@@ -133,7 +133,6 @@ export default function CreateNotePage() {
           />
         </div>
 
-        {/* Content */}
         <div className="mb-5">
           <label className={`block font-semibold mb-1 ${errors.content ? "text-red-500" : "text-gray-800"}`}>
             Content *
@@ -155,7 +154,6 @@ export default function CreateNotePage() {
           />
         </div>
 
-        {/* Type */}
         <div className="mb-5">
           <label className={`block font-semibold mb-1 ${errors.type ? "text-red-500" : "text-gray-800"}`}>
             Type *
@@ -187,7 +185,6 @@ export default function CreateNotePage() {
           </div>
         </div>
 
-        {/* Tags */}
         <div className="mb-5">
           <label className="block font-semibold text-gray-800 mb-1">
             Tags (Optional)
@@ -202,7 +199,6 @@ export default function CreateNotePage() {
           />
         </div>
 
-        {/* Source URL */}
         <div className="mb-6">
           <label className="block font-semibold text-gray-800 mb-1">
             Source URL (Optional)
@@ -217,7 +213,6 @@ export default function CreateNotePage() {
           />
         </div>
 
-        {/* Save Button */}
         <button
           onClick={createNote}
           className="bg-[#e8c75f] text-black px-5 py-2 rounded-lg font-semibold transition hover:scale-105 active:scale-95 cursor-pointer"
