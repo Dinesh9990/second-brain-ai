@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
 
 export const fetchWithAuth = async (url, options = {}) => {
   const token = localStorage.getItem("token");
