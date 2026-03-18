@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 import { Trash2, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
+
 export default function NotesPage() {
   const [notes, setNotes] = useState([]);
   const [search, setSearch] = useState("");
@@ -14,30 +16,33 @@ export default function NotesPage() {
 
   const router = useRouter();
 
-  // ✅ FETCH NOTES WITH TOKEN
+  // ✅ FIXED FETCH NOTES
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/notes", {
+      const res = await fetch(`${BASE_URL}/notes`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
+      // ✅ ONLY HANDLE REAL ERROR
+      if (!res.ok) {
+        throw new Error("Failed request");
+      }
+
       const data = await res.json();
 
       console.log("NOTES RESPONSE:", data);
 
-      // ✅ Handle any response shape safely
       setNotes(Array.isArray(data) ? data : data.notes || []);
 
     } catch (err) {
-      Swal.fire("Error", "Failed to fetch notes", "error");
+      console.error(err); // ❌ no swal here (silent fail)
     }
   };
 
-  // ✅ PROTECT PAGE
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -50,7 +55,7 @@ export default function NotesPage() {
     fetchNotes();
   }, []);
 
-  // ✅ DELETE NOTE (WITH TOKEN)
+  // ✅ DELETE NOTE
   const handleDelete = async (e, id) => {
     e.preventDefault();
     e.stopPropagation();
@@ -66,7 +71,7 @@ export default function NotesPage() {
     });
 
     if (result.isConfirmed) {
-      await fetch(`http://localhost:5000/notes/${id}`, {
+      await fetch(`${BASE_URL}/notes/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -78,7 +83,6 @@ export default function NotesPage() {
     }
   };
 
-  // ✅ SAFE FILTER (NO CRASH EVER)
   let filteredNotes = Array.isArray(notes)
     ? notes.filter((note) => {
         const searchText = search.toLowerCase();
@@ -97,17 +101,14 @@ export default function NotesPage() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
 
-      {/* Header */}
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Notes Dashboard
         </h1>
 
         <div className="flex items-center gap-20">
-
           <div className="flex items-center gap-20">
 
-            {/* Create Button */}
             {notes.length > 0 && (
               <Link href="/notes/create">
                 <button className="bg-[#e8c75f] text-black px-5 py-2 rounded-lg font-semibold transition hover:scale-105 active:scale-95 cursor-pointer">
@@ -116,10 +117,8 @@ export default function NotesPage() {
               </Link>
             )}
 
-            {/* Search + Filters */}
             <div className="flex items-center gap-3">
 
-              {/* Search */}
               <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 w-72 focus-within:ring-1 focus-within:ring-black">
                 <input
                   type="text"
@@ -131,7 +130,6 @@ export default function NotesPage() {
                 <Search size={18} className="text-gray-500" />
               </div>
 
-              {/* Type Filter */}
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
@@ -144,7 +142,6 @@ export default function NotesPage() {
                 <option value="resource">Resource</option>
               </select>
 
-              {/* Sort */}
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value)}
@@ -155,15 +152,12 @@ export default function NotesPage() {
               </select>
 
             </div>
-
           </div>
-
         </div>
       </div>
 
       <hr className="border-t border-gray-800 mb-6" />
 
-      {/* EMPTY STATE */}
       {notes.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-24 text-center">
 

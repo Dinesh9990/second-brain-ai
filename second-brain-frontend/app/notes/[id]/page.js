@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { Trash2 } from "lucide-react";
 
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
+
 export default function NoteDetailPage() {
 
   const { id } = useParams();
@@ -12,7 +14,6 @@ export default function NoteDetailPage() {
 
   const [note, setNote] = useState(null);
 
-  // ✅ AUTH CHECK
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -37,8 +38,8 @@ export default function NoteDetailPage() {
       return;
     }
 
-    // ✅ FETCH NOTE (ONLY IF LOGGED IN)
-    fetch(`http://localhost:5000/notes/${id}`, {
+    // ✅ FIXED HERE
+    fetch(`${BASE_URL}/notes/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -48,7 +49,6 @@ export default function NoteDetailPage() {
 
   }, [id, router]);
 
-  // ✅ DELETE WITH TOKEN
   const handleDelete = async () => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -63,7 +63,8 @@ export default function NoteDetailPage() {
     if (result.isConfirmed) {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:5000/notes/${id}`, {
+      // ✅ FIXED HERE
+      await fetch(`${BASE_URL}/notes/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -98,7 +99,6 @@ export default function NoteDetailPage() {
         }
       >
 
-        {/* Delete Button */}
         <button
           onClick={handleDelete}
           className="absolute top-4 right-4 text-black hover:text-red-600 transition duration-200 cursor-pointer"
@@ -106,14 +106,12 @@ export default function NoteDetailPage() {
           <Trash2 size={26} />
         </button>
 
-        {/* Title */}
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
           {note.title}
         </h1>
 
         <hr className="my-4 border-gray-300" />
 
-        {/* Content */}
         <div className="mb-4">
           <h2 className="font-semibold text-gray-700 mb-1">
             Content
@@ -123,7 +121,6 @@ export default function NoteDetailPage() {
           </p>
         </div>
 
-        {/* Summary */}
         <div className="mb-4">
           <h2 className="font-semibold text-gray-700 mb-1">
             AI Summary
@@ -133,7 +130,6 @@ export default function NoteDetailPage() {
           </p>
         </div>
 
-        {/* Tags */}
         <div className="mb-4">
           <h2 className="font-semibold text-gray-700 mb-1">
             Tags
@@ -155,7 +151,6 @@ export default function NoteDetailPage() {
           )}
         </div>
 
-        {/* Source URL */}
         <div className="mb-6">
           <h2 className="font-semibold text-gray-700 mb-1">
             Source
@@ -174,7 +169,6 @@ export default function NoteDetailPage() {
           )}
         </div>
 
-        {/* Back Button */}
         <button
           onClick={() => router.push("/notes")}
           className="bg-black text-white px-4 py-2 rounded-lg cursor-pointer transition hover:scale-105 active:scale-95"
