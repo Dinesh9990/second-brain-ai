@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
-const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
-
 export default function SignupPage() {
 
   const router = useRouter();
@@ -40,7 +38,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch(`${BASE_URL}/auth/signup`, {
+      const res = await fetch("https://second-brain-ai-5au3.onrender.com/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -62,49 +60,39 @@ export default function SignupPage() {
       window.location.href = "/";
 
     } catch (err) {
-      console.error(err);
       Swal.fire("Error", "Server not reachable", "error");
     }
   };
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center pt-12">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Signup</h1>
 
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Signup
-      </h1>
+      <div
+        className="bg-white p-8 rounded-xl w-full max-w-md transition duration-200"
+        style={{ boxShadow: "1px 1px 5px goldenrod" }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.boxShadow = "2px 2px 10px goldenrod")
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.boxShadow = "1px 1px 5px goldenrod")
+        }
+      >
 
-      <div className="bg-white p-8 rounded-xl w-full max-w-md"
-        style={{ boxShadow: "1px 1px 5px goldenrod" }}>
+        <input type="text" placeholder="Enter your name"
+          className="w-full mb-4 border border-gray-300 px-3 py-2 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black"
+          value={name} onChange={(e) => setName(e.target.value)} />
 
-        <input
-          type="text"
-          placeholder="Enter your name"
-          className="w-full mb-4 border px-3 py-2 rounded-lg"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input type="email" placeholder="Enter your email"
+          className="w-full mb-4 border border-gray-300 px-3 py-2 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full mb-4 border px-3 py-2 rounded-lg"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <input type="password" placeholder="Enter password"
+          className="w-full mb-6 border border-gray-300 px-3 py-2 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black"
+          value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        <input
-          type="password"
-          placeholder="Enter password"
-          className="w-full mb-6 border px-3 py-2 rounded-lg"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          onClick={handleSignup}
-          className="bg-[#e8c75f] w-full py-2 rounded-lg font-semibold"
-        >
+        <button onClick={handleSignup}
+          className="bg-[#e8c75f] w-full py-2 rounded-lg font-semibold hover:scale-105 transition cursor-pointer">
           Signup
         </button>
 

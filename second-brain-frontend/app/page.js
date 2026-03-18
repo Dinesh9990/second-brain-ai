@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
+const BASE_URL = "https://second-brain-ai-5au3.onrender.com";
+
 export default function HomePage() {
   const router = useRouter();
 
@@ -14,7 +16,7 @@ export default function HomePage() {
 
   const textareaRef = useRef(null);
 
-  // ✅ AUTH CHECK (FIXED)
+  // ✅ AUTH CHECK
   const checkAuthAndRedirect = async () => {
     const token = localStorage.getItem("token");
 
@@ -42,6 +44,7 @@ export default function HomePage() {
     return true;
   };
 
+  // 🔥 FIXED SUMMARIZE API
   const handleSummarize = async () => {
     if (!content.trim()) {
       setError(true);
@@ -62,7 +65,7 @@ export default function HomePage() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/api/summarize", {
+      const res = await fetch(`${BASE_URL}/api/summarize`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,10 +74,16 @@ export default function HomePage() {
       });
 
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to summarize");
+      }
+
       setSummary(data.summary);
+
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Something went wrong", "error");
+      Swal.fire("Error", err.message || "Something went wrong", "error");
     } finally {
       setLoading(false);
     }
@@ -105,7 +114,7 @@ export default function HomePage() {
               router.push("/notes/create");
             }
           }}
-          className="bg-[#e8c75f] text-black px-6 py-2 rounded-xl font-semibold transition hover:scale-105 active:scale-95 cursor-pointer"
+          className="bg-[#e8c75f] text-black px-6 py-2 rounded-xl font-semibold hover:scale-105 cursor-pointer"
         >
           ✨ Create Note
         </button>
@@ -116,7 +125,7 @@ export default function HomePage() {
               router.push("/notes");
             }
           }}
-          className="bg-white text-black px-6 py-2 rounded-xl font-semibold border border-gray-300 transition hover:scale-105 active:scale-95 cursor-pointer"
+          className="bg-white text-black px-6 py-2 rounded-xl font-semibold border border-gray-300 hover:scale-105 cursor-pointer"
         >
           📚 View Notes
         </button>
@@ -124,14 +133,8 @@ export default function HomePage() {
 
       {/* Card */}
       <div
-        className="bg-white p-6 rounded-2xl w-full max-w-xl transition duration-200"
+        className="bg-white p-6 rounded-2xl w-full max-w-xl"
         style={{ boxShadow: "1px 1px 5px goldenrod" }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.boxShadow = "2px 2px 10px goldenrod")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.boxShadow = "1px 1px 5px goldenrod")
-        }
       >
 
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
@@ -144,18 +147,18 @@ export default function HomePage() {
           placeholder="Enter content..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`w-full mb-3 px-3 py-2 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none resize-none transition
-            ${error 
-              ? "border border-red-500 focus:ring-1 focus:ring-red-500" 
-              : "border border-gray-300 focus:ring-1 focus:ring-black"
-            }`}
+          className={`w-full mb-3 px-3 py-2 rounded-lg resize-none ${
+            error 
+              ? "border border-red-500" 
+              : "border border-gray-300"
+          }`}
           rows={4}
         />
 
         {/* Button */}
         <button
           onClick={handleSummarize}
-          className="bg-black text-white px-4 py-2 rounded-lg w-full transition hover:scale-105 cursor-pointer"
+          className="bg-black text-white px-4 py-2 rounded-lg w-full hover:scale-105 cursor-pointer"
         >
           {loading ? "Summarizing..." : "Summarize"}
         </button>
@@ -168,7 +171,7 @@ export default function HomePage() {
 
             <button
               onClick={handleReset}
-              className="bg-[#e8c75f] text-black px-4 py-2 rounded-lg transition hover:scale-105 cursor-pointer"
+              className="bg-[#e8c75f] text-black px-4 py-2 rounded-lg hover:scale-105 cursor-pointer"
             >
               Try Another Summary
             </button>
