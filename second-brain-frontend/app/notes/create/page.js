@@ -54,7 +54,7 @@ export default function CreateNotePage() {
         return;
       }
 
-      // ✅ FIXED HERE
+      // ✅ ONLY CHANGE HERE
       const res = await fetch(`${BASE_URL}/notes`, {
         method: "POST",
         headers: {
@@ -112,6 +112,7 @@ export default function CreateNotePage() {
         }
       >
 
+        {/* Title */}
         <div className="mb-5">
           <label className={`block font-semibold mb-1 ${errors.title ? "text-red-500" : "text-gray-800"}`}>
             Title *
@@ -133,6 +134,7 @@ export default function CreateNotePage() {
           />
         </div>
 
+        {/* Content */}
         <div className="mb-5">
           <label className={`block font-semibold mb-1 ${errors.content ? "text-red-500" : "text-gray-800"}`}>
             Content *
@@ -154,6 +156,7 @@ export default function CreateNotePage() {
           />
         </div>
 
+        {/* Type */}
         <div className="mb-5">
           <label className={`block font-semibold mb-1 ${errors.type ? "text-red-500" : "text-gray-800"}`}>
             Type *
@@ -185,6 +188,7 @@ export default function CreateNotePage() {
           </div>
         </div>
 
+        {/* Tags */}
         <div className="mb-5">
           <label className="block font-semibold text-gray-800 mb-1">
             Tags (Optional)
@@ -199,6 +203,7 @@ export default function CreateNotePage() {
           />
         </div>
 
+        {/* Source URL */}
         <div className="mb-6">
           <label className="block font-semibold text-gray-800 mb-1">
             Source URL (Optional)
